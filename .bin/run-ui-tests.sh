@@ -53,7 +53,7 @@ docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 install --dev
 
 export SHOP_URL="${NGROK_URL}"
 export EXTENSION_VERSION="${GIT_BRANCH}"
-export DB_HOST="http://127.0.0.1"
+export DB_HOST="localhost"
 export DB_NAME="${MYSQL_DATABASE}"
 export DB_USER="${MYSQL_USER}"
 export DB_PORT="${MYSQL_PORT_OUT}"
@@ -63,7 +63,9 @@ export SHOP_VERSION="${SHOP_VERSION}"
 export BROWSERSTACK_USER="${BROWSERSTACK_USER}"
 export BROWSERSTACK_ACCESS_KEY="${BROWSERSTACK_ACCESS_KEY}"
 echo "Running tests"
+
+docker ps
 # run tests
 vendor/bin/codecept run acceptance \
   -g "${TEST_GROUP}" -g "${SHOP_SYSTEM}" \
-  --env ci_magento2 --html --xml
+  --env ci_magento2 --html --xml --debug
