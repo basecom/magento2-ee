@@ -69,12 +69,13 @@ curl "$NGROK_URL" --head
 # start polling
 docker-compose exec web service cron start
 
+echo "\nModify File Permissions To Load CSS!\n"
+docker-compose exec web bash -c "chmod -R 777 ./"
+
 # clean cache to activate payment method
 docker-compose exec web php bin/magento cache:clean
 docker-compose exec web php bin/magento cache:flush
 #docker-compose exec web php bin/magento cache:disable db_ddl collections config
-docker-compose exec web php bin/magento cache:disable config
-
-echo "\nModify File Permissions To Load CSS!\n"
-docker-compose exec web bash -c "chmod -R 777 ./"
+#docker-compose exec web php bin/magento cache:disable config
 sleep 60
+

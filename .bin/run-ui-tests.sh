@@ -19,6 +19,7 @@ for ARGUMENT in "$@"; do
   GIT_BRANCH) GIT_BRANCH=${VALUE} ;;
   TRAVIS_PULL_REQUEST) TRAVIS_PULL_REQUEST=${VALUE} ;;
   SHOP_SYSTEM) SHOP_SYSTEM=${VALUE} ;;
+  SHOP_SYSTEM_CONTAINER_NAME) SHOP_SYSTEM_CONTAINER_NAME=${VALUE} ;;
   SHOP_VERSION) SHOP_VERSION=${VALUE} ;;
   BROWSERSTACK_USER) BROWSERSTACK_USER=${VALUE} ;;
   BROWSERSTACK_ACCESS_KEY) BROWSERSTACK_ACCESS_KEY=${VALUE} ;;
@@ -41,20 +42,29 @@ else
   TEST_GROUP="${MAJOR_RELEASE}"
 fi
 
+#setup codeception and dependencies
+rm -rf composer.lock
+docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/codeception --dev
+docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/module-webdriver --dev
+docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/module-asserts --dev
+docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/module-db --dev
 #get shopsystem-ui-testsuite project
-docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require wirecard/shopsystem-ui-testsuite:dev-TWDCEE-6288-configuration
+docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require wirecard/shopsystem-ui-testsuite:dev-TPWDCEE-6288-try2-configuration
 
-docker-compose run \
-  -e SHOP_SYSTEM="${SHOP_SYSTEM}" \
-  -e SHOP_URL="${NGROK_URL}" \
-  -e SHOP_VERSION="${SHOP_VERSION}" \
-  -e EXTENSION_VERSION="${GIT_BRANCH}" \
-  -e DB_HOST="${MYSQL_HOST}" \
-  -e DB_NAME="${MYSQL_DATABASE}" \
-  -e DB_USER="${MYSQL_USER}" \
-  -e DB_PASSWORD="${MYSQL_PASSWORD}" \
-  -e BROWSERSTACK_USER="${BROWSERSTACK_USER}" \
-  -e BROWSERSTACK_ACCESS_KEY="${BROWSERSTACK_ACCESS_KEY}" \
-  codecept run acceptance \
+export SHOP_URL="${NGROK_URL}"
+export EXTENSION_VERSION="${GIT_BRANCH}"
+export DB_HOST="http://127.0.0.1"
+export DB_NAME="${MYSQL_DATABASE}"
+export DB_USER="${MYSQL_USER}"
+export DB_PORT="${MYSQL_PORT_OUT}"
+export DB_PASSWORD="${MYSQL_PASSWORD}"
+export SHOP_SYSTEM_CONTAINER_NAME="${SHOP_SYSTEM_CONTAINER_NAME}"
+export SHOP_VERSION="${SHOP_VERSION}"
+export BROWSERSTACK_USER="${BROWSERSTACK_USER}"
+export BROWSERSTACK_ACCESS_KEY="${BROWSERSTACK_ACCESS_KEY}"
+
+CURRENT_DIR=$(pwd)
+# run tests
+cd vendor/wirecard/shopsystem-ui-testsuite && $CURRENT_DIR/vendor/bin/codecept run acceptance vendor/wirecard/shopsystem-ui-testsuite \
   -g "${TEST_GROUP}" -g "${SHOP_SYSTEM}" \
-  --env ci --html --xml --debug
+  --env ci-magento2 --html --xml
