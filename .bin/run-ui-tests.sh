@@ -63,6 +63,7 @@ export SHOP_VERSION="${SHOP_VERSION}"
 export BROWSERSTACK_USER="${BROWSERSTACK_USER}"
 export BROWSERSTACK_ACCESS_KEY="${BROWSERSTACK_ACCESS_KEY}"
 
+chmod -R 777 vendor/wirecard/shopsystem-ui-testsuite/
 CURRENT_DIR=$(pwd)
 # run tests
 cd vendor/wirecard/shopsystem-ui-testsuite && $CURRENT_DIR/vendor/bin/codecept run acceptance vendor/wirecard/shopsystem-ui-testsuite \
