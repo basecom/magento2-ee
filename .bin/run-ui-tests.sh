@@ -44,12 +44,14 @@ fi
 
 #setup codeception and dependencies
 rm -rf composer.lock
+
+#get shopsystem-ui-testsuite project
+git clone  --branch TPWDCEE-6288-try2-configuration https://github.com/wirecard/shopsystems-ui-testsuite.git
+cd shopsystems-ui-testsuite
 docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/codeception --dev
 docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/module-webdriver --dev
 docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/module-asserts --dev
 docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/module-db --dev
-#get shopsystem-ui-testsuite project
-docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require wirecard/shopsystem-ui-testsuite:dev-TPWDCEE-6288-try2-configuration
 
 export SHOP_URL="${NGROK_URL}"
 export EXTENSION_VERSION="${GIT_BRANCH}"
@@ -63,9 +65,7 @@ export SHOP_VERSION="${SHOP_VERSION}"
 export BROWSERSTACK_USER="${BROWSERSTACK_USER}"
 export BROWSERSTACK_ACCESS_KEY="${BROWSERSTACK_ACCESS_KEY}"
 
-chmod -R 777 vendor/wirecard/shopsystem-ui-testsuite/
-CURRENT_DIR=$(pwd)
 # run tests
-cd vendor/wirecard/shopsystem-ui-testsuite && $CURRENT_DIR/vendor/bin/codecept run acceptance vendor/wirecard/shopsystem-ui-testsuite \
+vendor/bin/codecept run acceptance \
   -g "${TEST_GROUP}" -g "${SHOP_SYSTEM}" \
   --env ci-magento2 --html --xml
