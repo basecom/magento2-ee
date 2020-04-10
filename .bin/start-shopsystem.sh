@@ -77,5 +77,5 @@ docker-compose exec web php bin/magento cache:clean
 docker-compose exec web php bin/magento cache:flush
 #docker-compose exec web php bin/magento cache:disable db_ddl collections config
 #docker-compose exec web php bin/magento cache:disable config
-sleep 60
+sleep 30
 

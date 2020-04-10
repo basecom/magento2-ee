@@ -48,10 +48,8 @@ rm -rf composer.lock
 #get shopsystem-ui-testsuite project
 git clone  --branch TPWDCEE-6288-try2-configuration https://github.com/wirecard/shopsystems-ui-testsuite.git
 cd shopsystems-ui-testsuite
-docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/codeception --dev
-docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/module-webdriver --dev
-docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/module-asserts --dev
-docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require codeception/module-db --dev
+echo "Installing shopsystems-ui-testsuite dependencies"
+docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 install --dev
 
 export SHOP_URL="${NGROK_URL}"
 export EXTENSION_VERSION="${GIT_BRANCH}"
@@ -64,7 +62,7 @@ export SHOP_SYSTEM_CONTAINER_NAME="${SHOP_SYSTEM_CONTAINER_NAME}"
 export SHOP_VERSION="${SHOP_VERSION}"
 export BROWSERSTACK_USER="${BROWSERSTACK_USER}"
 export BROWSERSTACK_ACCESS_KEY="${BROWSERSTACK_ACCESS_KEY}"
-
+echo "Running tests"
 # run tests
 vendor/bin/codecept run acceptance \
   -g "${TEST_GROUP}" -g "${SHOP_SYSTEM}" \
