@@ -66,4 +66,4 @@ echo "Running tests"
 # run tests
 vendor/bin/codecept run acceptance \
   -g "${TEST_GROUP}" -g "${SHOP_SYSTEM}" \
-  --env ci-magento2 --html --xml
+  --env ci_magento2 --html --xml
